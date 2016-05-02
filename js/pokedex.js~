@@ -1,0 +1,86 @@
+var pokeApp = angular.module('pokedex', ['ngResource'])
+    .controller('pokcontroller', ['$scope', '$log','$http','pokService', function($scope, $log,$http,pokService) {
+        $scope.listepokemons = [
+                {name:'pikachu',id:'1'},
+                {name:'charizard',id:'2'},
+                {name:'snorlax',id:'3'},
+            ];
+            $scope.idpok='';
+            $scope.$log = $log;
+
+        $http({
+            method : "GET",
+            url : "http://pokeapi.co/api/v2/pokemon/?limit=20&offset=20"
+        }).then(function mySucces(response) {
+            $scope.listep = response.data;
+        }, function myError(response) {
+        $scope.$log = response.statusText;
+        });
+
+        $scope.sendIdPok = function(idp){
+
+            $log.info("id de la liste "+idp);
+
+            pokService.setId(idp);
+        }
+        
+        $scope.$on('handleBroadcast', function() {
+            $scope.idpkmn = pokService.id;
+        });
+
+        //$http.get("http://pokeapi.co/api/v2/pokemon/")
+        //    .then(function(response) {
+        //        $scope.listep = response.data;
+        //    });
+        }])
+
+    ;
+
+pokeApp.factory('pokeInfo', function($resource) {
+    return $resource(pokeApiUrl+"api/v2/pokemon/:id/",{id:'@id'});
+});
+
+pokeApp.controller('secondectrl', secondectrl);
+function secondectrl($scope, $resource,$log,pokService){
+
+    var pokemons = $resource(pokeApiUrl+"api/v2/pokemon/:id/");
+    	$scope.$watch(pokService.getId(), function() {
+        pokemons.get({id:pokService.getId()}, function (pokemon) {
+            $log.info(pokemon);
+            $scope.id = pokemon.id;
+            $scope.nom = pokemon.name;
+            $scope.moves = pokemon.moves;
+        });
+        });
+}
+
+pokeApp.factory('pokService', function($log,$rootScope) {
+    var service ={};
+    service.id= 1;
+
+    service.setId = function (newid) {
+        $log.info("envoi id de la liste au factory"+newid);
+        this.id= newid;
+        $log.info("nouveau id est :"+this.id);
+        this.broadcastItem();
+
+    }
+    service.broadcastItem = function() {
+        $rootScope.$broadcast('handleBroadcast');
+    };
+    service.getId = function () {
+        return this.id;
+    }
+
+    return service;
+
+    });
+
+
+
+
+pokeApp.config(['$resourceProvider', function($resourceProvider) {
+    $resourceProvider.defaults.stripTrailingSlashes = false;
+
+}]);
+var pokeApiUrl = "http://pokeapi.co/"

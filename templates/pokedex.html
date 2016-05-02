@@ -1,0 +1,38 @@
+<div class="container">
+		<h1>PokeSIR -ISMAIL MELLALI/AZILIZ BARON</h1>
+
+		<!-- Search -->
+		<div ng-controller="ctrlPokemon">
+		
+		<p>Name : <input type="text" ng-model="name"></p>
+		<h1>{{name}}</h1>
+
+		<p>Filtre :<input type="text" ng-model="filtre"></p>
+
+		<select ng-model="idp">
+			<option ng-repeat="x in listep | filter : filtre" >{{x.name}}</option>
+		</select>
+
+		<p>{{idp}}</p>
+			<input type="button" class="btn btn-lg btn-primary" name="get" value="Go!" ng-click="sendIdPok(idp)">
+		</div>
+
+		
+		<div ng-controller="secondectrl" >
+
+		<h1>Id pokemon : {{id}}</h1>
+		<h1>Nom pokemon : {{nom}}</h1>
+		<img src="{{image}}" alt="" style="width:250px;height:200px;">
+
+		<h1>Attaques :</h1>
+		<select size="5">
+			<option ng-repeat="x in moves">
+				{{x.move.name}}
+			</option>
+		</select>
+
+	</div>
+</div>
+<br>
+	
+	
